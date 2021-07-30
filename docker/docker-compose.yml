@@ -9,13 +9,13 @@ database:
     ports: 
       - "3306:3306"
     volumes:
-      - ./teamplanning/sql:/docker-entrypoint-initdb.d
+      - ../sql:/docker-entrypoint-initdb.d
 
 phpServer: 
     image: bitnami/php-fpm:7.4.16 
     container_name: phpServer 
     volumes:
-        - /home/teamplanning_test/:/srv/http/:ro
+        - ../../:/srv/http/:ro
     links:
         - database:database
     ports:
@@ -25,8 +25,8 @@ webServer:
     image: nginx
     container_name: webServer
     volumes:
-        - /home/teamplanning_test:/usr/share/nginx/html/:ro
-        - /home/teamplanning_test/conf/nginx.conf:/etc/nginx/nginx.conf/:ro
+        - ../../.:/usr/share/nginx/html/:ro
+        - ./conf/nginx.conf:/etc/nginx/nginx.conf/:ro
     links:
         - phpServer:phpServer
     ports:

@@ -1,7 +1,7 @@
 <?php
 # --- Team_Planning Config file ---
 
-$docker = false;
+$docker = true;
 
 $serverAdress = $_SERVER['SERVER_ADDR']=='::1' ?  '127.0.0.1' : $_SERVER['SERVER_ADDR'];
 $host = ($docker == true) ? "database" : $serverAdress;
