@@ -10,37 +10,45 @@ require_once ABS_CLASSES_PATH.'DbInterface.php';
 
 class DbMySqli implements DbInterface {
 
-    private $_noMsg;
-    private $_stmt;
+    protected $_log;
+    protected $_stmt;
+	protected $_eMessage;
 
 
     public function setLog($bln) {
-        $this->_noMsg = $bln;
+        $this->_log = $bln;
     }
 
     public function getLog() {
-        return $this->_noMsg;
+        return $this->_log;
     }
 
-	/* Etablit une connexion à un serveur de base de données et retourne un identifiant de connexion
-	   L'identifiant est positif en cas de succès, FALSE sinon.
-	   On pourrait se connecter avec un utilisateur lambda
-	   */
-	public function connect($conInfos, $no_msg = 0)
+
+	/**
+	 * Retourne un message d'erreur (si le resultat retourné est false).
+	 * @return String $this->_eMessage
+	 */
+	public function getErrorMessage() {
+		return $this->_eMessage;
+	}
+
+	/**
+	 * Etablit une connexion à un serveur de base de données et retourne un identifiant de connexion
+	 * L'identifiant est positif en cas de succès, FALSE sinon.
+	 * On pourrait se connecter avec un utilisateur lambda
+	 */
+	public function connect($conInfos, $log = false)
 	{
-        $this->_noMsg = $no_msg;
+        $this->setlog($log);
         $this->_stmt = false;
+		$this->_eMessage = null;
         $link =  false;
         $host = $conInfos['host'];
 		$dbname = $conInfos['dbase'];
         $dbh = new mysqli($host = $host, $conInfos['username'], $conInfos['password'], $dbname);
-		if ($dbh->connect_error)
-		{
-            if ($no_msg == false){
-                mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-                echo "Erreur de connexion N° ". mysqli_connect_errno();
-            }
-            $this->close($dbh);
+		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+		if ($dbh->connect_errno) {
+			$this->_eMessage =  "Erreur de connexion Mysqli N° ". $dbh->connect_error;
 		} else {
             $link = $dbh;
         }
@@ -75,14 +83,19 @@ class DbMySqli implements DbInterface {
 	 * @return array $resultSet : resultat de l'execution
 	 */
 	public function execQuery($link, $query) {
-        $resultSet = $link->real_query($query);
-        $resultSet = $link->store_result();
-        if (!$resultSet) {
-            if($this->_noMsg !== false) {
-                printf("Erreur : %s\n", mysqli_error($link));
-            }
-            
-        }
+		try {
+			$resultSet = $link->real_query($query);
+			$resultSet = $link->store_result();
+        	
+			if($resultSet === false) {
+				throw new mysqli_sql_exception(sprintf("Erreur : %s\n", $link->error));
+			}
+			
+		} catch(mysqli_sql_exception $e) {
+			$this->_eMessage = $e->getMessage();  
+			$resultSet = false; 
+		}
+        
 		return $resultSet;
 	}
 
@@ -121,12 +134,15 @@ class DbMySqli implements DbInterface {
                     }
                 }
                 $this->_stmt->execute();
+				if($this->_stmt === false) {
+					throw new mysqli_sql_exception(sprintf("Erreur : %s\n", $link->error));
+					// mysqli_error($link)
+				}
             } 
 
         } catch (mysqli_sql_exception $e) {
-            if($this->_noMsg !== false) {
-                printf("Erreur : %s\n", mysqli_error($link));
-            }
+			printf("Erreur : %s\n", $e->getMessage());
+			$this->_stmt = false;
             $link->free_result();
         }
         return $this->_stmt;
@@ -155,8 +171,19 @@ class DbMySqli implements DbInterface {
 	{
         $results = false;
         $tabResults = array();
-        $tabResults = $resultSet->fetch_all(MYSQLI_NUM);
-        $resultSet->free_result();
+		try {
+			$tabResults = $resultSet->fetch_all(MYSQLI_NUM);
+			$resultSet->free_result();
+			if($tabResults === false) {
+				throw new mysqli_sql_exception(sprintf("Erreur : %s\n", mysqli_error($resultSet)));
+			}
+			
+		} catch (mysqli_sql_exception $e) {
+			printf("Erreur : %s\n", $e->getMessage());
+        }
+
+		$resultSet->free_result();
+        
         //$resultSet->close();
 		return $tabResults;
 	}
@@ -172,10 +199,48 @@ class DbMySqli implements DbInterface {
 	{
 		$results = false;
         $tabResults = array();
-        $tabResults = $resultSet->fetch_all(MYSQLI_ASSOC);
-        $resultSet->free_result();
+		try {
+			$tabResults = $resultSet->fetch_all(MYSQLI_ASSOC);
+			$resultSet->free_result();
+			if($tabResults === false) {
+				throw new mysqli_sql_exception(sprintf("Erreur : %s\n", mysqli_error($resultSet)));
+			}
+			
+		} catch (mysqli_sql_exception $e) {
+			printf("Erreur : %s\n", $e->getMessage());
+        }
+		$resultSet->free_result();
+        
         //$resultSet->close();
 		return $tabResults;
+	}
+
+    /**
+	 * @name:          fetchAssoc
+	 * @description:   Retourne une ligne de résultat sous forme de tableau associatif 
+	 *                 dont la clé correspond aux nom colonnes spécifiées en clause SELECT. 
+	 * 			       Retourne FALSE s'il n'existe pas de résultat. 
+	 * @param          array $resultSet: resultat de l'execution de la requête soit par execQuery(), 
+	 *                 soit par execPreparedQuery.
+	 */
+	public function fetchAssoc($resultSet) 
+	{
+		$result = false;
+		try {
+			$results = $resultSet->fetch(MYSQLI_ASSOC);
+			$resultSet->free_result();
+			if($result === false) {
+				throw new mysqli_sql_exception(sprintf("Erreur : %s\n", mysqli_error($resultSet)));
+			}
+			
+		} catch (mysqli_sql_exception $e) {
+            printf("Erreur : %s\n", $e->getMessage());
+            
+        }
+		$resultSet->free_result();
+        
+        //$resultSet->close();
+		return $result;
 	}
 	
 	public function escapeString($link, $arg){

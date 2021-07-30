@@ -87,11 +87,11 @@ if($isOk){
     }
     
     
-    if(!$insertion){
+    if($insertion === false){
         $type = ($actionUser == "insertion") ? 'l\'insertion !' : 'la modification';
-        $retour .= 'Problème lors de ' . $type;
+        $retour .= 'Problème lors de ' . $type . $dbaccess->getError();
     }else{
-        $retour .= ($actionUser == "insertion") ? 'nouvelle entrée crèée avec succès.' : 'modification effectuée.';
+        $retour .= ($actionUser == "insertion") ? 'nouvelle(s) entrée crèée avec succès.' : 'modification effectuée.';
     }
     //$retour .= $planning->getSql();
 }

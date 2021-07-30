@@ -158,12 +158,8 @@ class Planning {
             }
             $sql = $sqlInsert . $sqlData;
             $this->sql .= $sql.'<br>';
-            try{
-                $retour = $this->dbaccess->execQuery($sql);
-                $retour = TRUE;
-            }catch(Exception $e){
-                $retour = FALSE;
-            }
+            $retour = $this->dbaccess->execQuery($sql);
+            
            
         }
         return $retour;
@@ -209,12 +205,9 @@ class Planning {
         }else{
             $sql.= ' AND jour = \'' . $this->dateDebutSql . '\'';
         }
-        try{
-            $rs = $this->dbaccess->execQuery($sql);
-            $retour = TRUE;
-        }catch(Exception $e){
-            
-        }
+        
+        $retour = $this->dbaccess->execQuery($sql);
+
         $this->sql .= $sql.'<br>';
         return $retour;
     }
@@ -232,14 +225,8 @@ class Planning {
         }else{
             $sql .= ' AND jour = \'' . $this->oldDateDebutSql . '\'';
         }
-        try{
-            $rs = $this->dbaccess->execQuery($sql);
-            if($rs !== false) {
-                $retour = TRUE;
-            }
-        }catch(Exception $e){
-            $retour = FALSE;
-        }
+
+        $retour = $this->dbaccess->execQuery($sql);
         $this->sql .= $sql.'<br>';
         return $retour;
     }

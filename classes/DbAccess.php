@@ -19,6 +19,7 @@ class DbAccess
     private $_conInfos = array();
     private $_dbInterface;
     private $_log;
+    private $_msg;
 
     public function __construct($dbInterface)
 	{
@@ -28,29 +29,52 @@ class DbAccess
             $this->_conInfos['password'] = M_DBPASSWORD;
             $this->_conInfos['port'] = M_DBPORT;
             $this->_link = false;
-            $this->log = array();
-            
+            $this->_msg = false;
+            $this->_log = array();
             $this->_dbInterface = $dbInterface;  
     }
 
-    public function displayError($no_msg ) {
-        if(is_bool($no_msg)) {
-            $this->_link = $this->_dbInterface->setLog($no_msg);
+    public function logError($log ) {
+        if($log === true) {
+            $this->_link = $this->_dbInterface->setLog($log);
         }   
+    }
+
+
+
+    /**
+     * Retourne le messsage d'erreur de l'instance de DB
+     * @return String $this->_dbInterface->getErrorMessage();
+     */
+    public function getError() {
+        $errorString = "";
+        if($this->_msg === true) {
+            $errorString = ": " . $this->_dbInterface->getErrorMessage();
+        }
+        return $errorString;
+    }
+
+
+    /**
+     * Active / inactive le mode descriptif des erreurs BD
+     * @param bool $msgMode
+     */
+    public function setError($msgMode) {
+        if(is_bool($msgMode)) {
+            $this->_msg = $msgMode;
+        }
     }
     
     /**
      * @name connect
      * @description  Procède à la connexion et crée le pointeur $_link
      */
-    public function connect($no_msg = false)
+    public function connect($msg = true, $log = false)
 	{
-        try {
-            $this->_link = $this->_dbInterface->connect($this->_conInfos, $no_msg);
-        } catch (Exception $e) {
-            echo 'Erreur: ' . $e->getMessage();
-        }
-        return $this->_link;
+            $this->_log = $log;
+            $this->_msg = $msg;
+            $this->_link = $this->_dbInterface->connect($this->_conInfos, $log);
+            return $this->_link;
     }
     
 
@@ -106,7 +130,7 @@ class DbAccess
     /**
      * @name execQuery
      * @description Envoie la requête SQL $req pour son execution et 
-     * retourne un resultSet 
+     * retourne un resultSet ou false
      * @param String $query : Chaîne de la requête SQL
      */
        public function execQuery($query) 
@@ -144,6 +168,18 @@ class DbAccess
     public function fetchArray($resultSet) 
     {
 		$results = $this->_dbInterface->fetchArray($resultSet);
+		return $results;
+	}
+    
+
+    /** 
+     * @name fetchAssoc
+     * @description Retourne une ligne sous forme f'un tableau associatif ou FALSE si il ne reste plus de ligne
+     * @param Resultset $resultSet : Tableau associatif avec une seule clé et valeur
+     */
+    public function fetchAssoc($resultSet) 
+    {
+		$results = $this->_dbInterface->fetchAssoc($resultSet);
 		return $results;
 	}
     

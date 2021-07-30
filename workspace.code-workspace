@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "..\\shopping"
+		},
+		{
+			"path": "..\\Symfony\\article_symfony5"
+		},
+		{
+			"path": "..\\test_gac"
 		}
 	],
 	"settings": {}

@@ -8,6 +8,8 @@ interface DbInterface
     public function setLog($bln);
 
     public function getLog();
+
+    public function getErrorMessage();
     
     public function connect($conInfos, $no_msg = 0);
 
@@ -25,6 +27,9 @@ interface DbInterface
 
     public function getTableDatas($link, $query);
 
+    public function fetchAssoc($resultSet);
+
     public function getTableFields($link, $query);
+    
 
 }

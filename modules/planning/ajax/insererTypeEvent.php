@@ -46,7 +46,7 @@ if($isOk===FALSE){
 $dbaccess = new DbAccess($dbObj);
 $handler = $dbaccess->connect();
 if($handler===FALSE){
-    $retour = 'Erreur: Problème de connexion à la base ';
+    $retour = 'Erreur: Problème de connexion à la base ' . $dbaccess->getError();
     $isOk = false;
 }
 
@@ -60,8 +60,8 @@ if($isOk){
     
     
     $insertion = $activite->create($tabInsert);
-    if(!$insertion){
-        $retour = 'Un problème est survenu lors de la création du type d\'activité !';
+    if($insertion === false){
+        $retour = 'Un problème est survenu lors de la création du type d\'activité !' . $dbaccess->getError();
         //$retour.= $activite->getSql();
     }else{
         $retour = 'Votre nouveau type d\'activité a été créé.';
@@ -69,7 +69,6 @@ if($isOk){
 }
 
 $dbaccess->close($handler);
-//echo utf8_encode($retour);
 echo $retour;
 
 

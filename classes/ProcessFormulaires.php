@@ -89,7 +89,7 @@ Class ProcessFormulaires {
                 $titre == '' ? 'Enregistrement ' . $this->tableName : $titre;
                 $retour .= '<div class="legende_titre" onclick="$(\'#div_saisie_activite\').toggle();"><h1>' . $titre .'</h1></div>';
                 $retour .= '<div id="panel_' . $this->tableName . '" name = "panel_' . $this->tableName 
-                .'"><table id="tab_' . $this->tableName . '" class= "tab_params">';
+                .'"><table id="tab_' . $this->tableName . '" >';
                 
                 // Liste de tous les types d'événement
                 foreach ($tabChamps as $key => $value) {

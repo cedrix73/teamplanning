@@ -25,7 +25,7 @@ if($handler===FALSE){
     $retour = '';
     $retour .= '<div class="legende_titre" onclick="cacherComposantsInfo();"><h1>Types de congés</h1></div>';
     
-    $retour .= '<table id="tab_activites" class= "tab_params">';
+    $retour .= '<table id="tab_activites">';
     $retour .= '<th>libellé</th><th>couleur</th><th>abbréviation</th>';
     $classeParite = 'pair';
     if( count($tabActivites) > 0 ) {

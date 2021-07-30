@@ -11,17 +11,28 @@ require_once ABS_CLASSES_PATH.'DbInterface.php';
 class DbPdo implements DbInterface 
 {
 
-	private $_noMsg;
-	private $_stmt;
+	protected $_log;
+	protected $_stmt;
+	protected $_eMessage;
 
 
     public function setLog($bln) {
-        $this->_noMsg = $bln;
+        $this->_log = $bln;
     }
 
     public function getLog() {
-        return $this->_noMsg;
+        return $this->_log;
 	}
+
+	/**
+	 * Retourne un message d'erreur (si le resultat retourné est false).
+	 * @return String $this->_eMessage
+	 */
+	public function getErrorMessage() {
+		return $this->_eMessage;
+	}
+
+
 	
 	
     /**
@@ -29,20 +40,24 @@ class DbPdo implements DbInterface
      * L'identifiant est positif en cas de succès, FALSE sinon.
      * On pourrait se connecter avec un utilisateur lambda
      */
-	public function connect($conInfos, $no_msg = 0)
+	public function connect($conInfos, $log = false)
 	{
 		$host = $conInfos['host'];
 		$dbname = $conInfos['dbase'];
 		$dbh=$dsn='';
-		$this->_noMsg = $no_msg;
-		$this->_stmt = false;
+		$this->setlog($log);
+		$this->_stmt = false; 
+		$this->_eMessage = null;
 		try {
 			$dsn = "mysql:host=$host;dbname=$dbname";
 			$dbh = new PDO($dsn, $conInfos['username'], $conInfos['password']);
 			$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 			$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			if($dbh===false) {
+				throw new PDOException("La connexion à la base de données mySql a échoué");
+			}
 		} catch (PDOException $e) {
-			echo 'Failed: ' . $e->getMessage();
+			$this->_eMessage = $e->getMessage();
 		}
 		return $dbh;
 	}
@@ -63,8 +78,12 @@ class DbPdo implements DbInterface
 		$resultSet = false;
 		try {
 			$resultSet = $link->query($query);
+			if($link===false) {
+				throw new PDOException("La requête à la base de données mySql a échoué");
+			}
 		
 		} catch (PDOException $e) {
+			$this->_eMessage = $e->getMessage();
 			$resultSet = false;
 		}
 		return $resultSet;
@@ -98,12 +117,14 @@ class DbPdo implements DbInterface
 						$this->_stmt->bindParam($varName, $varValue);
 					}
 				}
-				$this->_stmt->execute();
+				$resultSet = $this->_stmt->execute();
+				if($resultSet===false) {
+					throw new PDOException("La requête à la base de données mySql a échoué");
+				}
 			}
 		} catch (PDOException $e) {
-			if($this->_noMsg !== false) {
-				echo 'Problème lors de l\'execution de la requête: ' . $e->getMessage();
-			}
+			$this->_eMessage = "Problème lors de l\'execution de la requête: " . $e->getMessage();
+			$this->_stmt = false;
 			
 		}
 		return $this->_stmt;
@@ -136,12 +157,12 @@ class DbPdo implements DbInterface
 		$results = false;
 		try {
 			$results = $resultSet->fetchAll(PDO::FETCH_NUM);
-		} catch (PDOException $e) {
-			if($this->_noMsg !== false) {
-				echo 'Problème lors du traitement du résultat de la requête ' 
-			   . ' en tableau numérique: ' . $e->getMessage();
+			if($results===false) {
+				throw new PDOException("Problème lors du traitement du résultat de la requête " 
+				. " en tableau numérique:");
 			}
-			
+		} catch (PDOException $e) {
+				$this->_eMessage = $e->getMessage();	
 		}
 		return $results;
 	}
@@ -158,18 +179,40 @@ class DbPdo implements DbInterface
 		$results = false;
 		try {
 			$results = $resultSet->fetchAll(PDO::FETCH_ASSOC);
-		} catch (PDOException $e) {
-			if($this->_noMsg !== false) {
-				echo 'Problème lors du traitement du résultat de la requête ' 
-			   . ' en tableau associatif: ' . $e->getMessage();
-			   $result = false;
+			if($results === false) {
+				throw new PDOException("Problème lors du traitement du résultat de la requête " 
+				. " en tableau associatif:");
 			}
-			
+		} catch (PDOException $e) {
+				$this->_eMessage = $e->getMessage();
 		}
+
 		return $results;
 	}
 
-	
+	/**
+	 * @name:          fetchAssoc
+	 * @description:   Retourne une ligne de résultat sous forme de tableau associatif 
+	 *                 dont la clé correspond aux nom colonnes spécifiées en clause SELECT. 
+	 * 			       Retourne FALSE s'il n'existe pas de résultat. 
+	 * @param          array $resultSet: resultat de l'execution de la requête soit par execQuery(), 
+	 *                 soit par execPreparedQuery.
+	 */
+	public function fetchAssoc($resultSet) 
+	{
+		$results = false;
+		try {
+			$results = $resultSet->fetch(PDO::FETCH_ASSOC);
+			if($results === false) {
+				throw new PDOException("Problème lors du traitement du résultat de la requête " 
+				. " en tableau associatif:");
+			}
+		} catch (PDOException $e) {
+			$this->_eMessage = $e->getMessage();
+		}
+			
+		return $results;
+	}
 	
 	public function escapeString($link, $arg)
 	{

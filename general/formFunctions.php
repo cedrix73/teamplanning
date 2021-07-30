@@ -62,10 +62,10 @@ function rightEncode($string) {
  * tabLoad
  * Crée un tableau à partir d'une table avec une structure telle que:
  * <nomTable>: nomTable_id, nom du champ libellé
- * @param type $nom_champ_sql
+ * @param DBA $nom_champ_sql
  * @param type $nom_table
- * @param type $db
- * @return type
+ * @param DbAccess $db
+ * @return array $tab
  */
 function tabLoad($nomChampSql, $nomTableBd, $db, $filtre = null){
     $nom_table = $nomTableBd;

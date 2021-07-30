@@ -103,25 +103,15 @@ if($isOk){
             
         }
     }
-    try {
-        $rs = $planning->update();
-        if($rs !== false) {
-            $modification = true;
-        }
-    } catch(Exception $e) {
-        $modification = false;
-        $retour .= "Il y a eu un problème SQL au moment de la modification !";
-    }
-    
-    
-    
-    if($modification){
+
+    $rs = $planning->update();
+    if($rs === false) {
+        $retour .= "Il y a eu un problème SQL au moment de la modification !" . $dbaccess->getError();
+    } else {
         $retour .= "Modification effectuée avec succès.";
-    }else{
-        $retour .= " Désolé...";
     }
-    //$retour .= $planning->getSql();
 }
+
 $dbaccess->close($handler);
 echo $retour;
 

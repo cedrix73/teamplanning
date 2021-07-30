@@ -81,7 +81,7 @@ class Ressource {
             $requete.= " AND service.libelle = '" . $this->serviceLibelle ."'";
         } 
         
-        $requete.= " ORDER BY ressource.nom ";
+        $requete.= " ORDER BY ressource.nom, site.id ";
 	    $rs = $this->dbaccess->execQuery($requete);
         $results=$this->dbaccess->fetchArray($rs);
         

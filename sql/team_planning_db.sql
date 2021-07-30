@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS departement (
   CONSTRAINT site_fk FOREIGN KEY (site_id)
         REFERENCES site(id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
 -- --------------------------------------------------------
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS service (
   CONSTRAINT departement_fk FOREIGN KEY (departement_id)
         REFERENCES departement(id)
         ON UPDATE CASCADE 
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
 

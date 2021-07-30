@@ -13,16 +13,27 @@
 // \DbAccess\Mysqli->methode
 class DbPostGresql implements DbInterface {
 
-	private $_noMsg;
+	private $_log;
 	private $_stmt;
+	private $_eMessage;
+	private $_link;
 
 
     public function setLog($bln) {
-        $this->_noMsg = $bln;
+        $this->_log = $bln;
     }
 
     public function getLog() {
-        return $this->_noMsg;
+        return $this->_log;
+	}
+
+
+	/**
+	 * Retourne un message d'erreur (si le resultat retourné est false).
+	 * @return String $this->_eMessage
+	 */
+	public function getErrorMessage() {
+		return $this->_eMessage;
 	}
 
 	
@@ -30,31 +41,33 @@ class DbPostGresql implements DbInterface {
 	   L'identifiant est positif en cas de succès, FALSE sinon.
 	   On pourrait se connecter avec un utilisateur lambda
 	   */
-	public function connect($conInfos, $no_msg = 0)
+	public function connect($conInfos, $log = false)
 	{
+		$this->setlog($log);
 		$this->_stmt = false;
         $host = $conInfos['host'];
 		$dbname = $conInfos['dbase'];
 		$link = pg_connect("\'host=".$host . " user=" . $conInfos['username'] . " password=" . $conInfos['password'] . " dbname=" . $dbname . " port=". $conInfos['host']. "\'");
 		if (!$link)
 		{
-				if ($no_msg == 0){
-					echo "Erreur de connexion sur ".$this->host." par ".$this->username;
-				}
-				return false;
+			$this->_eMessage =  "Erreur de connexion postGresql sur ".$this->host." par ".$this->username;
+			return false;
 		}
+		$this_link = $link;
 		return $link;
 	}
 	
-	public function database_error($result){
-            echo pg_result_error($result);
-            exit;
+	public function database_error($link, $message = ""){
+		if(!empty($message)) {
+			$message .= ": ";
+		}
+        $this->_eMessage = $message . pg_last_error($link);
 	}
 
 	/* Ferme la connexion au serveur MySQL associée à l'identifiant $hcon
 	   Retourne TRUE en cas de succès, FALSE sinon */
 	public function close() {
-		return pg_close($this->link);
+		return pg_close($this->_link);
 	}
 
 	/**
@@ -77,6 +90,9 @@ class DbPostGresql implements DbInterface {
 	 */
 	public function execQuery($link, $query) {
 		$resultSet = pg_query($link, $query);
+		if ($resultSet === false) {
+			$this->database_error($link);
+		}
 		return $resultSet;
     }
     
@@ -104,19 +120,17 @@ class DbPostGresql implements DbInterface {
 			$this->_stmt = false;
 		}
 		
-		try {
-			if(!$this->_stmt) {
-				$this->_stmt = $link->pg_prepare($link, "req1", $query);
-			}
-            
-			$this->_stmt = pg_execute($link, "req1", $args);
-			
-		} catch (PDOException $e) {
-			if($this->_noMsg !== false) {
-				echo 'Problème lors de l\'execution de la requête: ' . $e->getMessage();
-			}
-			
+
+		if(!$this->_stmt) {
+			$this->_stmt = $link->pg_prepare($link, "req1", $query);
 		}
+		
+		$this->_stmt = pg_execute($link, "req1", $args);
+		if ($this->_stmt === false) {
+			$msg = "Problème lors de l'execution de la requête prepared statement";
+			$this->database_error($link, $msg);
+		}
+			
 		return $this->_stmt;
 	}
 
@@ -176,15 +190,22 @@ class DbPostGresql implements DbInterface {
     public function prepareExecute($query=null,$var=null, $stmt=null){
         if(isset($query) && !is_null($query)){
             // mode preparation
-            $stmt = pg_prepare($this->link, "my_query", $query);
+            $stmt = pg_prepare($this->_link, "my_query", $query);
             return $stmt;
         }else{
             $myrow = array();
-            $result = pg_execute($this->link, "my_query", array("my_results_tab"));
-            
-            while ($myrow = $this->fetchArray($result)) {
+            $result = pg_execute($this->_link, "my_query", array("my_results_tab"));
+			if ($result === false) {
+				$msg = "Problème lors de l'execution de la requête prepared execute";
+				$this->database_error($this->_link, $msg);
+			}else{
+				while ($myrow = $this->fetchArray($result)) {
                 
-            }
+				}
+
+			}
+            
+            
             return $result;
         }
     }

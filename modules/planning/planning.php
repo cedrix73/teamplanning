@@ -15,7 +15,8 @@ if ($handler === false) {
     echo 'Handler NOK...';
     die();
 }
-
+// Affichage message erreur BD techniques ?
+$dbaccess->setError(M_LOG);
 
 $blnSites = false;
 $blnDepartements = false;
@@ -24,6 +25,7 @@ $blnServices = false;
 $blnRessources = false;
 
 // Liste des sites
+
 $listeSites = tabLoad('libelle', 'site', $dbaccess);
 $listeSites[0] = "Tous *";
 ksort($listeSites);
@@ -73,17 +75,16 @@ $refreshCalendarOption = '';
             <meta http-equiv="Content-Language" content="fr" />
             <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
             <META NAME="Author" CONTENT="Cédric Von Felten">
-            <link rel="stylesheet" type="text/css" media="screen"  href="../../styles/redmond/jquery-ui-1.9.2.custom.min.css" />
+            <link rel="stylesheet" type="text/css" media="screen"  href="../../styles/redmond/jquery-ui-1.11.4.custom.min.css" />
             <link type="text/css" rel="stylesheet" href="../../styles/principal.css">
-            <link type="text/css" rel="stylesheet" href="../../styles/evol.colorpicker.css" /> 
             <script src="../../js/jquery-1.8.3.min.js"></script>
-            <script src="../../js/jquery-ui-1.9.2.custom.min.js"></script>
+            <script src="../../js/jquery-ui-1.11.4.custom.min.js"></script>
             <script src="../../js/general.js"></script>
             <script src="js/planning.js"></script>
             <script src="../../js/localisation.js"></script>
             <script src="../../js/ressource.js"></script>
             <script src="js/event.js"></script>
-            <script src="../../js/evol.colorpicker.min.js" type="text/javascript"></script>
+
             <script>	
                     $(document).ready(function(){
                         cacherComposantsInfo();
@@ -119,6 +120,9 @@ $refreshCalendarOption = '';
                         ?> 
                         $("#div_saisie_activite").hide();
                         initialiserFormulaire.saisieActivite = $("#div_saisie_activite").html();
+                    });
+                    $(window).resize(function(){
+                        refreshCalendar(null);
                     });
 
             </script>
@@ -204,14 +208,14 @@ $refreshCalendarOption = '';
                             value=""
                             id="txt_str_date_debut" 
                             size="10" maxlength="10"
-                            class="champ_date" readonly>                     
+                             readonly>                     
                             <span>&nbsp;au&nbsp;</span>   
                             <input type="text"
                             name="txt_str_date_fin"
                             id="txt_str_date_fin"
                             value=""
                             size="10" maxlength="10"
-                            class="champ_date" readonly>
+                            class="champ_date_fin" readonly>
                             <span>&nbsp;Type d'absence:&nbsp;</span> 
                             <select id="lst_activites" name="lst_activites"></select>
                             <span>&nbsp;Période:&nbsp;</span> 
@@ -230,16 +234,16 @@ $refreshCalendarOption = '';
                             name="txt_str_date_debut_modif"
                             value=""
                             id="txt_str_date_debut_modif" 
-                            onchange="attribuerDateFin(this.value);" 
+                            onchange="attribuerDateFinModif(this.value);" 
                             size="10" maxlength="10"
-                            class="champ_date" readonly>                     
+                            readonly>                     
                             <span>&nbsp;au&nbsp;</span>   
                             <input type="text"
                             name="txt_str_date_fin_modif"
                             id="txt_str_date_fin_modif"
                             value=""
                             size="10" maxlength="10"
-                            class="champ_date" readonly>
+                            class="champ_date_fin" readonly>
                             <span>&nbsp;Type d'absence:&nbsp;</span> 
                             <select id="lst_activites_modif" name="lst_activites_modif"></select>
                             <span>&nbsp;Période:&nbsp;</span> 

@@ -69,12 +69,11 @@ class Event {
         
         $sql = $sqlInsert . $sqlData;
         $this->sql = ' ' . $sql;
-        try{
             $retour = $this->dbaccess->execQuery($sql);
-            //$retour = TRUE;
-        }catch(Exception $e){
-            $retour = false;
-        }
+            if($retour === false) {
+                
+            }
+      
         return $retour;
         
         

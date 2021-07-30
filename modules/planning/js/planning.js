@@ -91,9 +91,17 @@ function refreshCalendar(dateText=null){
     // largeur cadre min
     var l_planning = 1100; 
     var nb_col_sup = 0;
-    // redimensionnement horizontal: à implémenter
+
+
     l_fenetre = $(window).width(); 
-    nb_col_sup = parseInt((l_fenetre -1100) / 293);
+    var largeur_col = 293;
+    var largeur_cadre= convertPxToInt($("#cadre").css("width"));
+
+    var largeur_colonne_droite= convertPxToInt($("#planning").css("width"));
+    
+    nb_col_sup = (l_fenetre - largeur_colonne_droite) < 50 ? 0 : parseInt((l_fenetre - 1100) / largeur_col);
+    // redimensionnement horizontal: à implémenter 
+   // nb_col_sup = parseInt((l_fenetre - 1100) / largeur_col);
     $("#img_loading").show();
     // requête ajax
     $.post("ajax/afficherCal.php", 
@@ -106,17 +114,16 @@ function refreshCalendar(dateText=null){
             $("#img_loading").hide();
             if(data.length >0) {
                 $('#planning').html(data);
-                redim();
+               
+
+
                 // redimensionnement horizontal 
                 // On utilise des valeurs précalculées à partoir de lireDimensions()
-                var largeur_col = 293;
+                
                 var l_defilement = parseInt(232 + (parseInt(nb_col_sup + 2) * largeur_col)  + 32);//1100
                 var l_cadre = 250 + l_defilement;
-                //alert(l_cadre);//1100
-                //l_fenetre = $(window).width() - 50; 
                 var delta = parseInt(l_fenetre -l_cadre);
                 nb_col_sup = parseInt(delta / largeur_col);
-                //alert(l_fenetre);
                 if(l_cadre>=1100){
                     $('#defilement').css("width" , l_defilement + "px");
                     $('.col_droite').css("width" , parseInt(l_defilement) + "px");
@@ -134,6 +141,12 @@ function refreshCalendar(dateText=null){
 function setDateWidget(dateRetournee){
     $('#div_date').datepicker({dateFormat: "dd/mm/yy"}).
         datepicker("setDate", dateRetournee);
+}
+
+
+function noWeekendsOrHolidays(date) {
+	var noWeekend = jQuery.datepicker.noWeekends(date);
+	return noWeekend;
 }
   
 
@@ -178,8 +191,6 @@ function afficherSaisie(date, ressource_id, numActivite = null, numPeriode) {
         // Modification ou supression
         $('#lst_activites').refresh();
         
-        //alert(lst_activites.options[lst_activites.selectedIndex].text);
-        
         infoRessource.action = "modification";
         $("#btn_valider_saisie").val("Modifier");
         //$('#btn_valider_saisie').attr('onclick', 'verifierEvent()');
@@ -213,13 +224,25 @@ function afficherSaisie(date, ressource_id, numActivite = null, numPeriode) {
    jour = matchArray[1];
    mois = parseInt(matchArray[3]-1);
    annee = parseInt(matchArray[5]);
+
    
-   $(".champ_date").datepicker({
-       minDate: new Date(annee, mois, jour),
+   $(".champ_date_fin").datepicker({
+       minDate: date,
        dateFormat: 'dd/mm/yy',
        firstDay: 1,
        monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-       dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],});
+       dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+       constrainInput: true,
+	   beforeShowDay: noWeekendsOrHolidays});
+
+    $("#txt_str_date_debut_modif").datepicker({
+        minDate: new Date(),
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+        dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        constrainInput: true,
+        beforeShowDay: noWeekendsOrHolidays});
 }
 
 
@@ -239,6 +262,7 @@ function verifierEvent() {
         fonction_js = 'validerSaisie()';
         date_debut = $("#txt_str_date_debut").val();
         date_fin = $("#txt_str_date_fin").val();
+        //  Pas besoin confirmation si date debut = fin
         if(date_debut === date_fin) {
             no_need = true;
         }
@@ -270,7 +294,6 @@ function verifierEvent() {
                 activite_sel: ""+$("#lst_activites").val()+"", 
                 periode_sel: ""+$("#lst_periodes").val()+""}, 
                 function(data){
-                    //alert(data);
                     $("#img_loading").hide();
                     $( "#supprimer" ).html("&nbsp;");   
                     if(data !== null && data.length >0) {
@@ -374,38 +397,50 @@ function liste_activites_load(){
     });
 }
 
-function attribuerDateFin(valeur_date) {
+function attribuerDateFinModif(valeur_date) {
     $("#txt_str_date_fin_modif").val(valeur_date);
+    $("#txt_str_date_fin_modif" ).datepicker( "option", "minDate", valeur_date);
+
 }
 
 
 function lireDimensions(){
-    var cadre_margin = convertPxToInt($("#cadre").css("margin-left"));
-    var cadre_pad = convertPxToInt($("#cadre").css("padding-left"));
-    var espace_cadre = cadre_margin + cadre_pad;
-
     var largeur_menu= convertPxToInt($("#menu_gauche").css("width"));
     var largeur_menu_pad_gauche = convertPxToInt($("#menu_gauche").css("padding-left"));
-    var largeur_menu_pad_droite = convertPxToInt($("#menu_gauche").css("padding-left"));
+    var largeur_menu_pad_droite = convertPxToInt($("#menu_gauche").css("padding-right"));
     var largeur_menu_tot = largeur_menu + largeur_menu_pad_gauche + largeur_menu_pad_droite;
 
+    var largeur_col_droite_min= convertPxToInt($(".col_droite").css("width"));
+    var largeur_col_droite_pad_g= convertPxToInt($(".col_droite").css("padding-left"));
+    var largeur_col_droite_pad_d= convertPxToInt($(".col_droite").css("padding-right"));
+    var largeur_col_droite_tot = largeur_col_droite_min + largeur_col_droite_pad_g + largeur_col_droite_pad_d;
+
+    var largeur_cadre_margin_g = convertPxToInt($("#cadre").css("margin-left"));
+    var largeur_cadre_margin_d = convertPxToInt($("#cadre").css("margin-right"));
+    var largeur_cadre_margin_tot = largeur_cadre_margin_g + largeur_cadre_margin_d;
+
+    var espace_libre = largeur_menu_tot + largeur_col_droite_tot + largeur_cadre_margin_tot;
     var largeur_legende = convertPxToInt($(".legende_ressources").css("width"));
     var largeur_legende_pad = convertPxToInt($(".legende_ressources").css("padding-left"));
     var largeur_legende_ress = largeur_legende + largeur_legende_pad;//232
     //alert(espace_cadre + largeur_menu_tot);//250
 
-    var largeur_col = convertPxToInt($(".entete_semaine").css("width"));//293
-    var l_defilement = parseInt(largeur_legende_ress + (parseInt(nb_col_sup + 2) * largeur_col)  + 32);//1100
-    var l_cadre = espace_cadre + largeur_menu_tot + l_defilement;
+    var largeur_col = convertPxToInt($(".entete_semaine").css("width")) + 32 ;//293
+    var l_defilement = parseInt(largeur_legende_ress  + 32);//1100
+    var l_cadre = espace_cadre + largeur_menu_tot + largeur_col_droite_margin + largeur_legende_ress + l_defilement;
     
     nb_col_sup = parseInt((l_fenetre -l_cadre) / largeur_col);
-    //alert(l_fenetre);
+
+    
     if(l_cadre>=1100){
         $('#defilement').css("width" , l_defilement + "px");
         $('.col_droite').css("width" , parseInt(l_defilement) + "px");
         $('#cadre').css("width" , l_cadre + "px");
     }
-    $('#planning').css("height", "400px");
+    
+
+    return nb_col_sup;
+    
 }
 
 

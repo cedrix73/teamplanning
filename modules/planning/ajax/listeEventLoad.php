@@ -17,7 +17,7 @@ $retour = '';
 $dbaccess = new DbAccess($dbObj);
 $handler = $dbaccess->connect();
 if($handler===FALSE){
-    $retour = 'Problème de connexion à la base ';
+    $retour = 'Problème de connexion à la base ' . $dbaccess->getError();
 }else{
     $activite = new Event($dbaccess);
     $tabActivites = array();

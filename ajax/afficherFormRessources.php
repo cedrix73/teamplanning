@@ -61,20 +61,23 @@ Class RessourceProcessFormulaires extends ProcessFormulaires {
      * @name getElementbyIdForUpdate
      * @description Selection une ressource par son $id et retourne 
      * un tableau [nomDuChamp] = $valeur
-     * @param integer $id
+     * @param integer $this->idToModif
      * @return array $listeDonneesRes
      */
     public function getElementbyIdForUpdate() {
         $listeDonneesRes = array();
+        $listeDonneesResEncoded = array();
         if (isset ($this->idToModif) && $this->idToModif!== null) {
             $select = "SELECT * from ressource WHERE id = " . $this->idToModif;
-            $rs = $this->getDbAccess()->execQuery($select);
+            $rs = $this->getDbAccess()->execPreparedQuery($select);
             $listeDonneesRes = $this->getDbAccess()->fetchArray($rs);
             unset($listeDonneesRes[0]['id']);
         } else {
             $listeDonneesRes[0] = $this->_tabDefaultValues;
         }
-        return $listeDonneesRes[0];
+        $listeDonneesResEncoded =  array_map('rightEncode', $listeDonneesRes[0]);
+
+        return $listeDonneesResEncoded;
     }
 
     

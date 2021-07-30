@@ -1,0 +1,17 @@
+# Deny access to .htaccess
+<Files .htaccess>
+Order allow,deny
+Deny from all
+</Files>
+
+# Disable directory browsing 
+Options -Indexes 
+
+
+<FilesMatch "\.(git)$">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+RewriteEngine on 
+# RewriteRule ^modules/([^/.]+)$ modules/$1/$2.php [NC]

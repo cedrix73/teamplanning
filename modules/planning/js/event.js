@@ -59,9 +59,6 @@ function insererTypeEvent(){
             if(data.length >0) {
                 afficherTypesEvents();
                 afficherMessage(data);
-                // @todo
-                // appliquer le résultat du patch 1.1.1 de la fonction afficherSaisie
-                // directement dans la chaine initialiserFormulaire.saisieActivite
             }
         }       
     );

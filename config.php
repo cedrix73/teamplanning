@@ -30,8 +30,8 @@ define('M_DBNAME', TEAM_DATABASE_NAME);
 
 
 
-// DEBUG (log,debug or false) 
-define('M_LOG','');
+// Detail des mesage d'erreurs: A mettre sur false en PROD
+define('M_LOG', true);
 
 // Path for error log
 define('M_TMP_DIR','/tmp/errors.log');

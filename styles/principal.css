@@ -18,7 +18,10 @@ p.presentation {
 
 
 #cadre {
-    margin:15px 15px 15px;
+    margin-left:15px;
+    margin-right:15px;
+    margin-bottom:15px;
+    margin-top:15px;
     width:1100px;
     border: 1px solid;
     border-radius: 15px;
@@ -64,7 +67,7 @@ a:hover {
     box-shadow: 5px, 5px, 5px #b3c1db;
     
     background: #901A1C;
-    background-image: -moz-linear-gradient(right top,#901A1C 0%,#FF9980 100%);
+    background-image: -moz-linear-gradient(right top,#c7383a 0%,#FF9980 100%);
     background-image: -webkit-gradient(linear,right top, left bottom,color-stop(0, #901A1C),color-stop(1, #FF9980));
     
     background: -webkit-linear-gradient(right top, #901A1C 0%, #FF9980 100%);
@@ -89,7 +92,6 @@ a:hover {
 
 #defilement {
     float:left;
-    height:345px;
     overflow-Y: scroll;
     scroll: auto;
 }
@@ -149,11 +151,13 @@ a:hover {
     display:inline-block;
 }
 .col_droite { /*conteneur du tableau*/
-    margin:0;
-    padding: 4px;
+    margin-left: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
     font: 11px Arial, Helvetica, sans-serif;
     color: black;
-    float: left;
+    float: right;
     width: 850px;
     background: #CCFFFF;
     
@@ -197,7 +201,6 @@ a:hover {
 
 
 .cell, .today, .legende_ressources, .legende_me, legende_totaux{
-    background:#00;
     margin-top: 2px;
     border-radius: 5px;
     -moz-border-radius: 5px;
@@ -309,8 +312,6 @@ fieldset {
 }
 
 #div_saisie_activite {
-    padding-left: 5px;
-    margin: 10px 3px;
     border-radius: 10px;
 }
 
@@ -328,7 +329,10 @@ fieldset {
     border-radius: 15px;
     -moz-border-radius: 15px;
     -webkit-border-radius: 15px;
+    margin: 10px 10px;
     padding-bottom: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
     background: #CFF;
 }
 /* Tableau des types d'activités */
