@@ -77,6 +77,7 @@ $refreshCalendarOption = '';
             <META NAME="Author" CONTENT="Cédric Von Felten">
             <link rel="stylesheet" type="text/css" media="screen"  href="../../styles/redmond/jquery-ui-1.11.4.custom.min.css" />
             <link type="text/css" rel="stylesheet" href="../../styles/principal.css">
+            <link type="text/css" rel="stylesheet" href="styles/planning.css">
             <script src="../../js/jquery-1.8.3.min.js"></script>
             <script src="../../js/jquery-ui-1.11.4.custom.min.js"></script>
             <script src="../../js/general.js"></script>

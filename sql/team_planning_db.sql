@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS ressource (
   prenom varchar(255) NOT NULL,
   telephone varchar(20) DEFAULT NULL,
   adresse_mail varchar(255) NOT NULL,
+  mot_de_passe varchar(255),
   date_naissance date DEFAULT NULL,
   site_id integer(255) not NULL,
   departement_id integer(255) not NULL,

@@ -244,7 +244,7 @@ class DbMySqli implements DbInterface {
 	}
 	
 	public function escapeString($link, $arg){
-		return $link->real_escape_string($arg);
+		return mysqli_real_escape_string($link, $arg);
 	}
         
     public function multipleQueries($link, $queries){

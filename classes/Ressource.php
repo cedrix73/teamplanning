@@ -180,4 +180,34 @@ class Ressource {
         }
         return $retour;   
     }
+
+    public function authenticate($login, $password, $no_msg = 0) 
+    {
+        // https://waytolearnx.com/2020/01/formulaire-dauthentification-login-mot-de-passe-avec-php-et-mysql.html
+        $login = $this->dbaccess->escapeString($login);
+        $password = $this->dbaccess->escapeString($password);
+        $retour = false;
+		
+		$req = "SELECT * FROM ressource WHERE adresse_email = \"".$login."\" AND mot_de_passe = ". hash('sha256', $password);
+		$retour = $this->dbaccess->exec_query($req);
+		if ($retour == FALSE) {
+			if ($no_msg == 0) {
+				$retour = "Erreur lors de la lecture de l'utilisateur";
+			}
+			return $retour;
+		}
+		$uti = $this->dbaccess->fetch_row($retour);
+		if ($uti == FALSE) {
+			if ($no_msg == 0) {
+				$retour = "Cet utilisateur n'est pas présent dans la base utilisateur";
+			}
+			return $retour;
+		}
+		$this->num = intval($uti[0]);
+		$this->username = $uti[1];
+		$this->password = $uti[2];
+		$this->host = $uti[3];
+		$this->role = intval($uti[4]);
+		return $retour;
+	}
 }
