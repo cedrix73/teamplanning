@@ -27,26 +27,30 @@ $blnRessources = false;
 // Liste des sites
 
 $listeSites = tabLoad('libelle', 'site', $dbaccess);
-$listeSites[0] = "Tous *";
-ksort($listeSites);
+if($listeSites === false) {
+    echo "Erreur d'accès à la base, aucun site n'a pau être retourné.";
+} else {
+    $listeSites[0] = "Tous *";
+    ksort($listeSites);
 
-if (count($listeSites) > 1) {
-    $blnSites = true;
+    if (count($listeSites) > 1) {
+        $blnSites = true;
 
-    // Liste des departements
-    $filtreDepartements = "";
-    $listeDepartements = listeLoad('libelle', 'departement', $dbaccess, $filtreDepartements);
-    if (count($listeDepartements) > 1) {
-        $blnDepartements = true;
-        $listeServices = listeLoad('libelle', 'service', $dbaccess);
-        if (count($listeServices) > 1) {
-            $blnServices = true;
-            $listeRessources = listeLoad('id', 'ressource', $dbaccess, 'LIMIT 1');
-            if (count($listeRessources) > 1) {
-                $blnRessources = true;
+        // Liste des departements
+        $filtreDepartements = "";
+        $listeDepartements = listeLoad('libelle', 'departement', $dbaccess, $filtreDepartements);
+        if (count($listeDepartements) > 1) {
+            $blnDepartements = true;
+            $listeServices = listeLoad('libelle', 'service', $dbaccess);
+            if (count($listeServices) > 1) {
+                $blnServices = true;
+                $listeRessources = listeLoad('id', 'ressource', $dbaccess, 'LIMIT 1');
+                if (count($listeRessources) > 1) {
+                    $blnRessources = true;
+                }
             }
-        }
 
+        }
     }
 }
 

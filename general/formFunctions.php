@@ -128,6 +128,9 @@ function selectLoad($nomChampSql, $nomTableBd, $db, $filtre = null)
     $sql = 'SELECT DISTINCT (id), '.$nomChampSql . 
             ' FROM '.$nomTableBd;
     $reponse = $db->execQuery($sql);
+    if($reponse===false) {
+        return false;
+    }
     $results = $db->fetchArray($reponse);
     $options = '';
     if (is_array($results) && count($results) > 0) {
