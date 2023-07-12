@@ -14,10 +14,11 @@ Le calendrier tient compte des jours fériés.
 
 ### b) Déployement docker (OS linux avec docker installé) ###
 Veuillez télecharger le code source et le dézipper dans le répertoire "web" de votre distribution Linux.
-Executez le fichier docker-compose.yml; cela aura pour effet de :
-- Télecharger les images docker nginx (serveur web), maria-db (base de données) et php fpm 7.3 (interpréteur Php)
-- Créer les containers docker à partir des images télechargées
-- Déployer votre base de données
+Executez le fichier docker-compose.yml; cela aura pour effet de :  
+1) Télécharger les images docker nginx (serveur web), maria-db (base de données) et php fpm 7.3 (interpréteur Php)
+2) Créer les containers docker à partir des images télechargées
+3) Déployer votre base de données (création des tables et peuplement par des données pré-paramétrées)
+4) Lancer l'application
 
 ## Paramétrage##
 ### Type de jours de congé ###
@@ -25,7 +26,7 @@ Certains types de jours de congé sont déjà pré-paramétrés (congés payés,
 
 
 ## Les affectations des ressources : notions de Sites, Départements, Services ##
-Teamplanning tente d'être au plus proche de l'organisation d'entreprise. Ainsi vos employés peuvent être affectés à un ou différents sites (localisation géographique comme par exemple Paris, Lyon).
+Teamplanning tente d'être au plus proche de l'organisation d'une entreprise. Ainsi vos employés peuvent être affectés à un ou différents sites (localisation géographique comme par exemple Paris, Lyon).  
 Chaque site peut être subdivisé en différents départements (par exemple achats, comptabilité, infogérance, développement logiciel, RH) et peut être subdivisé en plusieurs services 
 (pour le département RH on pourrait avoir les services développement paie, recrutement...).
 Cet structure vous permettra ensuite de filtrer plus efficacement l'ensemble de vos ressources (par site, département et service).
