@@ -24,15 +24,15 @@ Type de jours de congé
 Certains types de jours de congé sont déjà pré-paramétrés (congés payés, RTT, maladie, télétravail). Vous pouvez facilement créer d'autres type jours de congé
 
 
-## Site, département,  service##
+## Les affectations des ressources : notions de Sites, Départements, Services ##
 Teamplanning tente d'être au plus proche de l'organisation d'entreprise. Ainsi vos employés peuvent être affectés à un ou différents sites (localisation géographique comme par exemple Paris, Lyon).
 Chaque site peut être subdivisé en différents départements (par exemple achats, comptabilité, infogérance, développement logiciel, RH) et peut être subdivisé en plusieurs services 
 (pour le département RH on pourrait avoir les services développement paie, recrutement...).
-L'application vous permettra ensuite de filtrer l'affichage par site, département et service.
+Cet structure vous permettra ensuite de filtrer plus efficacement l'ensemble de vos ressources (par site, département et service).
 
-Si votre organisation a la même structure de départements / services pour l'ensemble des sites, veuillez employer rigoureusement les mêmes libellés :
-pourrez ainsi par exemple afficher l'ensemble des ressources affectés au service paie, quelque soit le site. 
-
+Si votre organisation a la même structure de départements / services pour l'ensemble des sites, veuillez employer rigoureusement les mêmes libellés 
+d'un site à un autre : vous pourrez ainsi par exemple afficher l'ensemble des ressources RH affectés au service paie, quelque soit le site.  
+Ainsi pour un service devant assurer une permanence quelque soit le site, filtrer sur son libellé peut être judicieux.  
 
 ## Utilisation ##
 Teamplanning a été conçu pour une utilisation rapide et intuitive.
@@ -45,7 +45,7 @@ Après avoir validé ces informations, l'application vous demandera alors confir
 Si l'application détecte un chevauchement de dates (jours déjà déclarés dans votre plage de date), vous en serez averti.
 Elle vous demandera alors si vous voulez écraser les dates saisies précédemment ou non.
 
-## Futurs axes d développement ## 
+## Futurs axes de développement ## 
 - Mécanisme d'authentification
 - Création des rôles et des autorisations (policies)
 - Création du cycle e vie d'un congé (statut : en demande, confirmé..)
