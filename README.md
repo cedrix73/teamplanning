@@ -20,7 +20,7 @@ Executez le fichier docker-compose.yml; cela aura pour effet de :
 - Déployer votre base de données
 
 ## Paramétrage##
-Type de jours de congé
+### Type de jours de congé ###
 Certains types de jours de congé sont déjà pré-paramétrés (congés payés, RTT, maladie, télétravail). Vous pouvez facilement créer d'autres type jours de congé
 
 
@@ -38,8 +38,8 @@ Ainsi pour un service devant assurer une permanence quelque soit le site, filtre
 Teamplanning a été conçu pour une utilisation rapide et intuitive.
 Pour déclarer un jour de congé, cliquez sur la bonne ligne de ressource à la bonne date en colonne.
 Sur le bord inférieur de l'écran, L'application vous demandera :
-- La date de fin (si vous voulez notifier un congé sur plusieurs jours (par exemple vacances)
-- Quel type de jour de congé vous voulez déclarer (proposés dan une liste déroulante).
+- La date de fin (si vous voulez notifier un congé sur plusieurs jours comme par exemple le types d'événements vacances)
+- Quel type de jour de congé vous voulez déclarer (tous proposés dans une liste déroulante).
 
 Après avoir validé ces informations, l'application vous demandera alors confirmation.
 Si l'application détecte un chevauchement de dates (jours déjà déclarés dans votre plage de date), vous en serez averti.
