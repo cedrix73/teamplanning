@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         
+
+        {
+            "name": "Listen for Xdebug",
+            "type": "php",
+            "request": "launch",
+            "port": 9003
+        },
         {
             "name": "Launch current script in console",
             "type": "php",
@@ -13,13 +20,6 @@
             "cwd": "${fileDirname}",
             "externalConsole": false,
             "port": 9003
-        },
-        {
-            "name": "Listen for Xdebug",
-            "type": "php",
-            "request": "launch",
-            "port": 9003
-        },
-        
+        }
     ]
 }

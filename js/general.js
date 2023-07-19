@@ -118,9 +118,9 @@
    
    
    function afficherMessage(txt_message, temps=3000){
-       $("#message").html("<div><div>" + txt_message + "</div></div");
-       $("#message").fadeIn(800).delay( temps );
-       $("#message").fadeOut(400);
+       $("#message").html(txt_message);
+       //$("#message").fadeIn(800).delay( temps );
+       //$("#message").fadeOut(400);
    }
    
    
@@ -203,7 +203,7 @@
    
    function validerSaisieForm(container_name){
        // verification champs formulaire front
-       var div = $("#" + container_name);
+       var formulaire = $("#" + container_name);
        var fields_tab = [];
        var unfilled_required_tab = [];
        var bln_ok = true;
@@ -215,20 +215,24 @@
        var ressourceLabel = '';
        
    
-       $(div).find('input, select, textarea')
+       $(formulaire).find('input, select, textarea')
            .each(function() {
                
-               var ressourceObject = new Object();
-               ressourceObject.nom = $(this).attr('name');
-               ressourceObject.valeur = $(this).val();
-               ressourceObject.required = $(this).attr('required');
-               ressourceLabel = $(this).prev("label").html();
-               ressourceObject.label = ressourceLabel;
-               ressourceObject.type = $(this).prop('type');
+                var ressourceObject = new Object();
+                ressourceObject.nom = $(this).attr('name');
+                ressourceObject.valeur = $(this).val();
+                ressourceObject.required = $(this).attr('required');
+                ressourceLabel = $(this).prev("label").html();
+                if(typeof  ressourceObject.label === 'undefined') {
+                  ressourceLabel = $(this).attr('name');
+                }
+                ressourceObject.label = ressourceLabel;
+                ressourceObject.type = $(this).prop('type');
+               
                
                // verification des types generaux 
                // mail
-               if(typeof(ressourceObject.valeur) !== 'undefined' && ressourceObject.valeur !== '' && ressourceObject.nom !== ''){
+               if(typeof(ressourceObject.valeur) !== 'undefined' && ressourceObject.valeur !== '' && ressourceObject.nom !== 'undefined'){
                    // Verification de qq champs spéciaux par libelle
                    if(ressourceObject.nom.includes("_nom") || ressourceObject.nom.includes("_prenom")) {
                        if(verifStringAlpha($(this).attr('name')) == false) {
@@ -296,7 +300,6 @@
                
            });
    
-       
        if(!bln_ok){ 
            $.each(unfilled_required_tab, function(key, value) {
                unfilled_required_string += '<li>' + value + '</li>';
@@ -312,7 +315,7 @@
            afficherMessage(message);
            return false;
        }else{
-           var json_string = JSON.stringify(fields_tab);
+           var json_string = JSON.stringify(fields_tab); 
            return json_string;
        }
    }

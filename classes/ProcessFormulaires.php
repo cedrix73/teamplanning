@@ -181,7 +181,16 @@ Class ProcessFormulaires {
 
     }
 
-    public function checkForm($tabChamps) 
+    /**
+     * @name checkForm
+     * @author cvonfelten 
+     * @description   Verifie chaque champ issu d'un formulaire inclu dans le tableau $tabChamps
+     * Chaque champ inclu doit être un sous-tableau indexé de son nom, de sa valeur, de son type 
+     * @param Array $tabChamps    tableau des champs 
+     * @param boolean $blnNomChampsOriginels    indique si le nom du champ originel doit être conservé ou non (false par défaut)
+     * 
+     */
+    public function checkForm($tabChamps, $blnNomChampsOriginels = false) 
     {
         $msgErr = "";
         $isOk = true;
@@ -248,7 +257,41 @@ Class ProcessFormulaires {
                             $isOk = false;
                             $this->msgErr .= "<br>Erreur: Le champ " . $labelChamp . "ne contient pas de valeurs numériques.";
                           }
+                        break; 
+
+                        case 'password':
+                            // /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+                            // Au moins une majuscule
+                            $majuscule = preg_match('@[A-Z]@', $valeurChamp);
+                            // Au moins une minuscule
+                            $minuscule = preg_match('@[a-z]@', $valeurChamp); 
+                            // Au moins un chiffre
+                            $chiffre = preg_match('@[0-9]@', $valeurChamp); 
+                            // Au moins un caractère spécial - _ + *
+                            $carSpec = preg_match('/[\'\!@#$%\^&\*\(\)_\-\+=\{\}\[\]\|;:\<\>,\.\?\]]/', $valeurChamp);
+
+                            if(!$majuscule) {
+                                $isOk = false; 
+                                $this->msgErr .= "<br>Erreur: Le champ " . $labelChamp . " doit contenir des majuscules ";
+
+                            } 
+                            if(!$minuscule) {
+                                $isOk = false; 
+                                $this->msgErr .= "<br>Erreur: Le champ " . $labelChamp . " doit contenir des minuscules ";
+                            } 
+                            
+                            if(!$carSpec) {
+                                $isOk = false; 
+                                $this->msgErr .= "<br>Erreur: Le champ " . $labelChamp . " des car. spéciaux ";
+                            } 
+                            
+                            if(strlen($valeurChamp) < 8) {
+                                $isOk = false; 
+                                $this->msgErr .= "<br>Erreur: Le mot de passe dooit contenir au moins 8 caractères en tout ";
+                            }
+
                         break;
+
     
                         default:
                           // radios
@@ -259,7 +302,12 @@ Class ProcessFormulaires {
     
                 }
                 if($isOk) {
-                    $this->_tabInsert[$nomChampFinal] = $valeurChamp;
+                    if($blnNomChampsOriginels) {
+                        $this->_tabInsert[$nomChamp] = $valeurChamp;
+                    } else {
+                        $this->_tabInsert[$nomChampFinal] = $valeurChamp;
+                    }
+                    
                 }
     
             }
@@ -279,6 +327,11 @@ Class ProcessFormulaires {
         return $this->_tabInsert;
     }
 
+    /**
+     * @name getMsgErreurs
+     * @description Retourne les messages d'erreurs retournés par checkForm (inspection des champs)
+     * @return string
+     */
     public function getMsgErreurs() {
         return $this->msgErr;
     }

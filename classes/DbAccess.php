@@ -39,7 +39,15 @@ class DbAccess
             $this->_link = $this->_dbInterface->setLog($log);
         }   
     }
-
+    
+    /**
+     * @name getErrorMessage
+     * @description : retourne le message de la classe de BD correspondante.
+     * @return string $this->_dbInterface->getErrorMessage()
+     */
+    public function getErrorMessage() {
+        return $this->_dbInterface->getErrorMessage();
+    }
 
 
     /**

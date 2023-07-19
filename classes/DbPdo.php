@@ -47,7 +47,7 @@ class DbPdo implements DbInterface
 		$dbh=$dsn='';
 		$this->setlog($log);
 		$this->_stmt = false; 
-		$this->_eMessage = null;
+		$this->_eMessage = false;
 		try {
 			$dsn = "mysql:host=$host;dbname=$dbname";
 			$dbh = new PDO($dsn, $conInfos['username'], $conInfos['password']);
@@ -101,23 +101,20 @@ class DbPdo implements DbInterface
 	 * '.. WHERE author.last_name = :prenom AND author.name = :nom'
 	 * 
 	 * @param ressource $link: instance renvoiée lors de la connexion PDO.
-	 * @param string $query: chaine SQL
+	 * @param string $query: chaine SQL 
+	 * @param string arg: champ à rechercher
 	 * @param boolean $again: Si true, le même statement est réexecuté avec de
 	 *                de nouveaux arguments; $query peut être vide.
 	 * @return mixed $stmt : retourne le statement de la requête.
 	 */
-	public function execPreparedQuery($link, $query, $args=null, $again) {
+	public function execPreparedQuery($link, $query, $args=null, $again = false) {
 		if(!$again) {
 			$this->_stmt = false;
 		}
 		try {
 			if($again || $this->_stmt = $link->prepare($query)){
-				if($args !== null) {
-					foreach ($args as $varName => $varValue) {
-						$this->_stmt->bindParam($varName, $varValue);
-					}
-				}
-				$resultSet = $this->_stmt->execute();
+				
+				$resultSet = $this->_stmt->execute([$args]);
 				if($resultSet===false) {
 					throw new PDOException("La requête à la base de données mySql a échoué");
 				}
